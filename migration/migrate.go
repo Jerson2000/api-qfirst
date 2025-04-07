@@ -23,6 +23,8 @@ func main() {
 func migrateModels() error {
 	err := config.Database.AutoMigrate(
 		&models.User{},
+		&models.Services{},
+		&models.Booking{},
 	)
 	if err != nil {
 		return fmt.Errorf("migration failed: %w", err)

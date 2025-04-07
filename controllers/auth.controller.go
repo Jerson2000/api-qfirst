@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/jerson2000/api-qfirst/config"
 	"github.com/jerson2000/api-qfirst/models"
 	"golang.org/x/crypto/bcrypt"
@@ -39,11 +40,11 @@ func AuthSignup(res http.ResponseWriter, req *http.Request) {
 	result := config.Database.Create(&signup)
 
 	if result.Error != nil {
-		models.ResponseWithError(res, http.StatusBadRequest, "Invalid request payload!")
+		models.ResponseWithError(res, http.StatusInternalServerError, "Failed to signup.")
 		return
 	}
 
-	tokenString, err := generateToken(signup.Name, signup.ID)
+	tokenString, err := generateToken(signup.Name, signup.Id)
 
 	if err != nil {
 		models.ResponseWithError(res, http.StatusUnauthorized, "Error generating token")
@@ -52,7 +53,7 @@ func AuthSignup(res http.ResponseWriter, req *http.Request) {
 
 	response := models.AuthResponse{
 		Message: "Signup successfully!",
-		UserId:  signup.ID,
+		UserId:  signup.Id,
 		Name:    signup.Name,
 		Token:   tokenString,
 	}
@@ -83,7 +84,7 @@ func AuthLogin(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tokenString, err := generateToken(user.Name, user.ID)
+	tokenString, err := generateToken(user.Name, user.Id)
 
 	if err != nil {
 		models.ResponseWithError(res, http.StatusUnauthorized, "Error generating token")
@@ -92,7 +93,7 @@ func AuthLogin(res http.ResponseWriter, req *http.Request) {
 
 	response := models.AuthResponse{
 		Message: "Login successfully!",
-		UserId:  user.ID,
+		UserId:  user.Id,
 		Name:    user.Name,
 		Token:   tokenString,
 	}
@@ -109,7 +110,7 @@ func AuthCurrent(res http.ResponseWriter, req *http.Request) {
 
 }
 
-func generateToken(name string, userId uint) (string, error) {
+func generateToken(name string, userId uuid.UUID) (string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 
 	claims := &models.JwtClaims{

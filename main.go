@@ -26,6 +26,10 @@ func main() {
 	routes.UserRoutes(&router)
 	// Auth Routes
 	routes.AuthRoutes(&router)
+	// services
+	routes.ServicesRoutes(&router)
+	// booking
+	routes.BookingRoutes(&router)
 
 	log.Println("Listening on port 3000")
 

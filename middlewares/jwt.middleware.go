@@ -16,7 +16,7 @@ func JwtMiddleware(next http.Handler) http.Handler {
 			authHeader := req.Header.Get("Authorization")
 
 			if authHeader == "" {
-				models.ResponseWithError(res, http.StatusUnauthorized, "No token provided")
+				models.ResponseWithError(res, http.StatusUnauthorized, "You don't have permission to access this resource!")
 				return
 			}
 
@@ -30,15 +30,15 @@ func JwtMiddleware(next http.Handler) http.Handler {
 
 			if err != nil {
 				if err == jwt.ErrSignatureInvalid {
-					models.ResponseWithError(res, http.StatusUnauthorized, "Invalid token signature")
+					models.ResponseWithError(res, http.StatusUnauthorized, "You don't have permission to access this resource!")
 					return
 				}
-				models.ResponseWithError(res, http.StatusBadRequest, "Invalid token")
+				models.ResponseWithError(res, http.StatusBadRequest, "You don't have permission to access this resource!")
 				return
 			}
 
 			if !token.Valid {
-				models.ResponseWithError(res, http.StatusBadRequest, "Invalid token")
+				models.ResponseWithError(res, http.StatusBadRequest, "You don't have permission to access this resource!")
 				return
 			}
 

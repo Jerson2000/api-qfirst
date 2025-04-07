@@ -3,13 +3,15 @@ package models
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 type AuthResponse struct {
-	Message string `json:"message"`
-	UserId  uint   `json:"userId"`
-	Name    string `json:"name"`
-	Token   string `json:"token"`
+	Message string    `json:"message"`
+	UserId  uuid.UUID `json:"userId"`
+	Name    string    `json:"name"`
+	Token   string    `json:"token"`
 }
 
 func ResponseWithError(res http.ResponseWriter, code int, message string) {

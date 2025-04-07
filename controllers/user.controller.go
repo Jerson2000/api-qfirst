@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/jerson2000/api-qfirst/config"
 	"github.com/jerson2000/api-qfirst/models"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func UserCreate(res http.ResponseWriter, req *http.Request) {
@@ -33,7 +35,11 @@ func UserCreate(res http.ResponseWriter, req *http.Request) {
 	result := config.Database.Create(&user)
 
 	if result.Error != nil {
-		models.ResponseWithError(res, http.StatusBadRequest, "Invalid request payload!")
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			models.ResponseWithError(res, http.StatusBadRequest, "Email already exist!")
+			return
+		}
+		models.ResponseWithError(res, http.StatusBadRequest, result.Error.Error())
 		return
 	}
 
@@ -68,13 +74,13 @@ func UserUpdate(res http.ResponseWriter, req *http.Request) {
 
 func UserList(res http.ResponseWriter, req *http.Request) {
 
-	claims := req.Context().Value("claims").(*models.JwtClaims)
-	userId := claims.ID
+	// claims := req.Context().Value("claims").(*models.JwtClaims)
+	// userId := claims.Id
 
-	if len(userId) == 0 {
-		models.ResponseWithError(res, http.StatusUnauthorized, "You don't permission!")
-		return
-	}
+	// if len(userId) == 0 {
+	// 	models.ResponseWithError(res, http.StatusUnauthorized, "You don't have permission!")
+	// 	return
+	// }
 
 	var users []models.User
 	if err := config.Database.Find(&users).Error; err != nil {
@@ -109,7 +115,7 @@ func UserDelete(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if err := config.Database.Delete(&user).Error; err != nil {
-		models.ResponseWithError(res, http.StatusInternalServerError, "Failed to update user!")
+		models.ResponseWithError(res, http.StatusInternalServerError, "Failed to delete service!")
 		return
 	}
 
