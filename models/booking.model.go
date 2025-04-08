@@ -15,8 +15,10 @@ type Booking struct {
 	TotalPrice    float64             `gorm:"not null" json:"total_price"`
 	Status        *enum.BookingStatus `gorm:"default:pending" json:"status"`
 	PaymentStatus *enum.PaymentStatus `gorm:"default:unpaid" json:"payment_status"`
-	ServiceId     uint                `gorm:"not null" json:"service_id"`
-	UserId        uuid.UUID           `gorm:"not null" json:"user_id"`
+	ServiceId     uint                `gorm:"not null,index" json:"service_id"`
+	Service       Services            `gorm:"foreignKey:ServiceId" json:"service"`
+	UserId        uuid.UUID           `gorm:"not null,index" json:"user_id"`
+	User          User                `gorm:"foreignKey:UserId" json:"user"`
 	CreatedAt     time.Time           `json:"created_at"`
 	UpdatedAt     time.Time           `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt      `gorm:"index" json:"deleted_at"`

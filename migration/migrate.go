@@ -25,6 +25,8 @@ func migrateModels() error {
 		&models.User{},
 		&models.Services{},
 		&models.Booking{},
+		&models.RefreshToken{},
+		&models.Devices{},
 	)
 	if err != nil {
 		return fmt.Errorf("migration failed: %w", err)
