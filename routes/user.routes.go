@@ -10,7 +10,7 @@ import (
 func UserRoutes(router *mux.Router) {
 	users := "/users"
 	// avoid unauthorized access
-	userChain := alice.New(middlewares.JwtMiddleware)
+	userChain := alice.New(middlewares.JwtMiddleware, middlewares.RBACMiddleware)
 	// POST
 	router.Handle(users, userChain.ThenFunc(controllers.UserCreate)).Methods("POST")
 	// PUT & PATCH

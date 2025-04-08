@@ -18,6 +18,7 @@ type User struct {
 	Address       *string        `gorm:"default:null" json:"address,omitempty"`
 	Phone         *string        `gorm:"default:null" json:"phone,omitempty"`
 	Role          *enum.Role     `gorm:"default:user;" json:"role,omitempty"`
+	IsVerified    bool           `gorm:"default:false" json:"is_verified"`
 	Bookings      []Booking      `gorm:"foreignKey:UserId" json:"bookings,omitempty"`
 	Devices       []Devices      `gorm:"foreignKey:UserId" json:"devices,omitempty"`
 	RefreshTokens []RefreshToken `gorm:"foreignKey:UserId" json:"refresh_tokens,omitempty"`

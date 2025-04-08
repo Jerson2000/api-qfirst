@@ -9,7 +9,7 @@ var JWTKey []byte
 var RefreshJWTKey []byte
 
 func ConfigJwtKey() {
-	JWTKey := []byte(os.Getenv(("JWT_SECRET")))
+	JWTKey := []byte(os.Getenv("JWT_SECRET"))
 	if len(JWTKey) == 0 {
 		log.Fatal("env jwt secret is not set")
 	}
@@ -17,7 +17,7 @@ func ConfigJwtKey() {
 }
 
 func ConfigRefreshJwtKey() {
-	RefreshJWTKey := []byte(os.Getenv(("REFRESH_JWT_SECRET")))
+	RefreshJWTKey := []byte(os.Getenv("REFRESH_JWT_SECRET"))
 	if len(RefreshJWTKey) == 0 {
 		log.Fatal("Env refresh jwt secret is not set")
 	}

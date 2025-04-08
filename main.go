@@ -14,7 +14,8 @@ func init() {
 	config.ConfigConnectToDatabase()
 	config.ConfigJwtKey()
 	config.ConfigRefreshJwtKey()
-
+	config.ConfigCasbinEnforcer()
+	config.ConfigCSRF()
 }
 
 func main() {

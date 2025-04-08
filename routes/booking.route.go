@@ -10,7 +10,7 @@ import (
 func BookingRoutes(router *mux.Router) {
 	booking := "/booking"
 	// avoid unauthorized access
-	userChain := alice.New(middlewares.JwtMiddleware)
+	userChain := alice.New(middlewares.JwtMiddleware, middlewares.RBACMiddleware)
 	// POST
 	router.Handle(booking, userChain.ThenFunc(controllers.BookingCreate)).Methods("POST")
 	// PUT & PATCH

@@ -1,0 +1,11 @@
+# Policies
+# Admin can do anything
+p, admin, /users, (GET)|(PUT)|(PATCH)|(POST)|(DELETE)
+p, admin, /booking, (GET)|(PUT)|(PATCH)|(POST)|(DELETE)
+p, admin, /services, (GET)|(PUT)|(PATCH)|(POST)|(DELETE)
+
+# User permissions
+p, user, /users, (GET)|(PUT)|(PATCH)
+p, user, /booking, (GET)|(POST)|(PUT)|(PATCH)
+p, user, /services, (GET)
+

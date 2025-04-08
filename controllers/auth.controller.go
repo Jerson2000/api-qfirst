@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"github.com/gorilla/csrf"
 	"github.com/jerson2000/api-qfirst/config"
 	"github.com/jerson2000/api-qfirst/models"
 	"golang.org/x/crypto/bcrypt"
@@ -46,21 +46,7 @@ func AuthSignup(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// tokenString, err := generateToken(signup.Name, signup.Id)
-
-	// if err != nil {
-	// 	models.ResponseWithError(res, http.StatusUnauthorized, "Error generating token")
-	// 	return
-	// }
-
-	// response := models.AuthResponse{
-	// 	Message: "Signup successfully!",
-	// 	UserId:  signup.Id,
-	// 	Name:    signup.Name,
-	// 	Token:   tokenString,
-	// }
-
-	response, err := savingTokenAndRefresh(true, signup.Name, signup.Id)
+	response, err := savingTokenAndRefresh(true, signup)
 	if err != nil {
 		models.ResponseWithError(res, http.StatusUnauthorized, err.Error())
 	}
@@ -91,7 +77,7 @@ func AuthLogin(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response, err := savingTokenAndRefresh(false, user.Name, user.Id)
+	response, err := savingTokenAndRefresh(false, user)
 	if err != nil {
 		models.ResponseWithError(res, http.StatusInternalServerError, err.Error())
 		return
@@ -123,7 +109,7 @@ func AuthRefresh(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// generate new token
-	tokenString, err := generateToken(refreshToken.User.Name, refreshToken.User.Id)
+	tokenString, err := generateToken(refreshToken.User)
 	if err != nil {
 		models.ResponseWithError(res, http.StatusInternalServerError, "Error generating token!")
 		return
@@ -147,16 +133,21 @@ func AuthRefresh(res http.ResponseWriter, req *http.Request) {
 }
 
 func AuthCurrent(res http.ResponseWriter, req *http.Request) {
-
+	claims := req.Context().Value("claims").(*models.JwtClaims)
+	models.ResponseWithJSON(res, http.StatusOK, claims)
+}
+func AuthRequestCSRFToken(res http.ResponseWriter, req *http.Request) {
+	models.ResponseWithJSON(res, http.StatusOK, map[string]string{"message": csrf.Token(req)})
 }
 
 // private functions
-func generateToken(name string, userId uuid.UUID) (string, error) {
+func generateToken(user models.User) (string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 
 	claims := &models.JwtClaims{
-		Name: name,
-		Id:   userId,
+		Name: user.Name,
+		Id:   user.Id,
+		Role: *user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -171,10 +162,11 @@ func generateToken(name string, userId uuid.UUID) (string, error) {
 	return tokenString, nil
 }
 
-func generateRefreshToken(expirationTime time.Time, name string, userId uuid.UUID) (string, error) {
+func generateRefreshToken(expirationTime time.Time, user models.User) (string, error) {
 	claims := &models.JwtClaims{
-		Name: name,
-		Id:   userId,
+		Name: user.Name,
+		Id:   user.Id,
+		Role: *user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -189,23 +181,23 @@ func generateRefreshToken(expirationTime time.Time, name string, userId uuid.UUI
 	return tokenString, nil
 }
 
-func savingTokenAndRefresh(isSignup bool, name string, userId uuid.UUID) (models.AuthResponse, error) {
+func savingTokenAndRefresh(isSignup bool, user models.User) (models.AuthResponse, error) {
 	var response models.AuthResponse
 
-	tokenString, err := generateToken(name, userId)
+	tokenString, err := generateToken(user)
 	if err != nil {
 		return response, fmt.Errorf("error generating token: %w", err)
 	}
 
 	var refreshToken models.RefreshToken
 
-	result := config.Database.Where("user_id = ?", userId).Delete(&refreshToken)
+	result := config.Database.Where("user_id = ?", user.Id).Delete(&refreshToken)
 	if result.Error != nil {
 		return response, fmt.Errorf("error deleting user tokens: %w", result.Error)
 	}
 
 	expirationTime := time.Now().Add(7 * 24 * time.Hour) // 7 days expiration
-	refreshTokenString, err := generateRefreshToken(expirationTime, name, userId)
+	refreshTokenString, err := generateRefreshToken(expirationTime, user)
 	if err != nil {
 		return response, fmt.Errorf("error generating refresh token: %w", err)
 	}
@@ -213,7 +205,7 @@ func savingTokenAndRefresh(isSignup bool, name string, userId uuid.UUID) (models
 	refreshToken = models.RefreshToken{
 		Token:        tokenString,
 		RefreshToken: refreshTokenString,
-		UserId:       userId,
+		UserId:       user.Id,
 		ExpiresAt:    expirationTime,
 	}
 
@@ -229,8 +221,8 @@ func savingTokenAndRefresh(isSignup bool, name string, userId uuid.UUID) (models
 
 	response = models.AuthResponse{
 		Message: message,
-		UserId:  userId,
-		Name:    name,
+		UserId:  user.Id,
+		Name:    user.Name,
 		Token:   tokenString,
 	}
 

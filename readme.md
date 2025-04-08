@@ -6,12 +6,13 @@ With a focus on performance and security, QFirst leverages modern middleware suc
 
 ### To-Do List
 
-- [x] **JWT Middleware**: Implement JWT-based authentication to secure the application.
-- [ ] **Refresh Token**: Not implemented yet (future enhancement for token renewal).
-- [ ] **Role-based Permission**: Implement role-based permission system for controlling user access.
+- [x] ~~**JWT Middleware**~~: Implemented JWT-based authentication to secure the application.
+- [x] ~~**Refresh Token**~~: Implemented refresh token system for token renewal.
+- [x] ~~**Role-based Permission**~~: Implemented role-based permission system for controlling user access.
+- [x] ~~**CSRF Middleware**~~: Implemented partially CSRF protection for secure requests.
 - [ ] **Cache Middleware**: Implement caching for faster data retrieval.
-- [ ] **Email Verification**: Implement email verification for user registration and login.
-- [ ] **WebSocket for Chat**: Implement WebSocket for real-time chat and other real-time features.
+- [ ] **OTP Verification**: Implement OTP-based verification for user.
+- [ ] **WebSocket**: Implement WebSocket for real-time chat and other real-time features.
 
 ### Tech Stack
 
