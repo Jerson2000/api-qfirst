@@ -10,7 +10,7 @@ With a focus on performance and security, QFirst leverages modern middleware suc
 - [x] ~~**Refresh Token**~~: Implemented refresh token system for token renewal.
 - [x] ~~**Role-based Permission**~~: Implemented role-based permission system for controlling user access.
 - [x] ~~**CSRF Middleware**~~: Implemented partially CSRF protection for secure requests.
-- [ ] **Cache Middleware**: Implement caching for faster data retrieval.
+- [x] ~~**Cache Middleware**~~: Implement caching for faster data retrieval.
 - [ ] **OTP Verification**: Implement OTP-based verification for user.
 - [ ] **WebSocket**: Implement WebSocket for real-time chat and other real-time features.
 

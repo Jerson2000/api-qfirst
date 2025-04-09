@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jerson2000/api-qfirst/config"
+	"github.com/jerson2000/api-qfirst/middlewares"
 	"github.com/jerson2000/api-qfirst/routes"
 )
 
@@ -16,6 +17,7 @@ func init() {
 	config.ConfigRefreshJwtKey()
 	config.ConfigCasbinEnforcer()
 	config.ConfigCSRF()
+	config.ConfigCacheInit()
 }
 
 func main() {
@@ -34,5 +36,5 @@ func main() {
 
 	log.Println("Listening on port 3000")
 
-	log.Fatal(http.ListenAndServe(":3000", &router))
+	log.Fatal(http.ListenAndServe(":3000", middlewares.CacheMiddleware(&router)))
 }
