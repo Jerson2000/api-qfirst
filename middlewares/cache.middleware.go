@@ -35,7 +35,13 @@ func CacheMiddleware(next http.Handler) http.Handler {
 		}
 
 		// exclude paths
-		excludedPaths := []string{"/auth/csrf"}
+		excludedPaths := []string{
+			"/auth/csrf",
+			"/swagger/swagger-ui.css",
+			"/swagger/swagger-ui-standalone-preset.js",
+			"/swagger/swagger-ui-bundle.js",
+			"/swagger/favicon-32x32.png",
+		}
 
 		// Check if the requested path is in the excluded list
 		if slices.Contains(excludedPaths, req.URL.Path) {

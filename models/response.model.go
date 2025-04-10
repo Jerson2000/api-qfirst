@@ -7,11 +7,18 @@ import (
 	"github.com/google/uuid"
 )
 
+// A response when logging,signing up and reissuance of a token
+// @Schema
 type AuthResponse struct {
-	Message string    `json:"message"`
-	UserId  uuid.UUID `json:"userId"`
-	Name    string    `json:"name"`
-	Token   string    `json:"token"`
+	// Respresents the message of the response
+	// @example Signup successful
+	Message string `json:"message"`
+	// Represent the id of the user
+	UserId uuid.UUID `json:"userId"`
+	// Represent the name of the user
+	Name string `json:"name"`
+	// Represent the access token for the user
+	Token string `json:"token"`
 }
 
 func ResponseWithError(res http.ResponseWriter, code int, message string) {

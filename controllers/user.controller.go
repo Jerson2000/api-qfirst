@@ -12,6 +12,18 @@ import (
 	"gorm.io/gorm"
 )
 
+// UserCreate godoc
+// @Summary Create a new user
+// @Description Add a new user to the platform
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User data"
+// @Success 201 {object} models.User
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /users [post]
 func UserCreate(res http.ResponseWriter, req *http.Request) {
 	var user models.User
 
@@ -46,6 +58,20 @@ func UserCreate(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusCreated, map[string]string{"message": "User has been created!"})
 }
 
+// UserUpdate godoc
+// @Summary Update a user
+// @Description Update user information by ID
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Param user body models.User true "Updated user data"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]string "Invalid request"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /users/{id} [put]
 func UserUpdate(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	userId := vars["id"]
@@ -60,7 +86,7 @@ func UserUpdate(res http.ResponseWriter, req *http.Request) {
 	}
 
 	var user models.User
-	if err := config.Database.First(&user, userId).Error; err != nil {
+	if err := config.Database.First(&user, "id=?", userId).Error; err != nil {
 		models.ResponseWithError(res, http.StatusBadRequest, "User not found!")
 		return
 	}
@@ -72,6 +98,16 @@ func UserUpdate(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"message": "User has been updated!"})
 }
 
+// UserList godoc
+// @Summary List all users
+// @Description Get a list of all users
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.User
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /users [get]
 func UserList(res http.ResponseWriter, req *http.Request) {
 
 	// claims := req.Context().Value("claims").(*models.JwtClaims)
@@ -91,12 +127,25 @@ func UserList(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"data": users})
 }
 
+// UserGetById godoc
+// @Summary Get user by ID
+// @Description Retrieve a user's details by their unique ID
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]string "Invalid user ID"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /users/{id} [get]
 func UserGetById(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	userId := vars["id"]
 
 	var user models.User
-	if err := config.Database.First(&user, userId).Error; err != nil {
+	if err := config.Database.First(&user, "id=?", userId).Error; err != nil {
 		models.ResponseWithError(res, http.StatusBadRequest, "User not found!")
 		return
 	}
@@ -104,12 +153,25 @@ func UserGetById(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"data": user})
 }
 
+// UserDelete godoc
+// @Summary Delete user by ID
+// @Description Permanently deletes a user by their unique ID
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} map[string]string "User deleted successfully"
+// @Failure 400 {object} map[string]string "Invalid user ID"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /users/{id} [delete]
 func UserDelete(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	userId := vars["id"]
 
 	var user models.User
-	if err := config.Database.First(&user, userId).Error; err != nil {
+	if err := config.Database.First(&user, "id=?", userId).Error; err != nil {
 		models.ResponseWithError(res, http.StatusBadRequest, "User not found!")
 		return
 	}

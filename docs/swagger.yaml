@@ -1,0 +1,910 @@
+basePath: /
+definitions:
+  controllers.AuthLoginStruct:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  enum.BookingStatus:
+    enum:
+    - pending
+    - confirmed
+    - cancelled
+    - completed
+    type: string
+    x-enum-varnames:
+    - Pending
+    - Confirmed
+    - Cancelled
+    - Completed
+  enum.PaymentStatus:
+    enum:
+    - partial
+    - unpaid
+    - paid
+    type: string
+    x-enum-varnames:
+    - Partial
+    - Unpaid
+    - Paid
+  enum.Role:
+    enum:
+    - admin
+    - user
+    type: string
+    x-enum-varnames:
+    - Admin
+    - User
+  models.Booking:
+    description: Represents a booking with associated user, service, start date, end
+      date, total price, status, and payment status.
+    properties:
+      created_at:
+        description: |-
+          Timestamp when the booking was created
+          @example "2025-04-10T14:22:00Z"
+        type: string
+      end_date:
+        description: |-
+          The end date of the booking
+          @example "2025-04-15T17:00:00Z"
+        type: string
+      id:
+        description: |-
+          ID of the booking, automatically incremented
+          @example 1
+        type: integer
+      payment_status:
+        allOf:
+        - $ref: '#/definitions/enum.PaymentStatus'
+        description: |-
+          Payment status of the booking (e.g., unpaid, paid, etc.)
+          @example "unpaid"
+      service_id:
+        description: |-
+          ID of the associated service for the booking
+          @example 1
+        type: integer
+      start_date:
+        description: |-
+          The start date of the booking
+          @example "2025-04-15T09:00:00Z"
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/enum.BookingStatus'
+        description: |-
+          Status of the booking (e.g., pending, confirmed, etc.)
+          @example "pending"
+      total_price:
+        description: |-
+          Total price of the booking
+          @example 250.75
+        type: number
+      updated_at:
+        description: |-
+          Timestamp when the booking was last updated
+          @example "2025-04-10T14:22:00Z"
+        type: string
+      user_id:
+        description: |-
+          ID of the user making the booking
+          @example "123e4567-e89b-12d3-a456-426614174000"
+        type: string
+    type: object
+  models.Services:
+    description: Represents a service with name, description, price, and duration.
+    properties:
+      bookings:
+        description: |-
+          List of bookings related to this service
+          @example [{ "id": 1, "user_id": 1, "status": "confirmed" }]
+        items:
+          $ref: '#/definitions/models.Booking'
+        type: array
+      created_at:
+        description: |-
+          Timestamp when the service was created
+          @example "2025-04-10T14:22:00Z"
+        type: string
+      description:
+        description: |-
+          Description of the service
+          @example "Comprehensive website design and development service."
+        type: string
+      duration:
+        description: |-
+          Duration of the service, optional
+          @example "3 hours"
+        type: string
+      id:
+        description: |-
+          ID of the service, automatically incremented
+          @example 1
+        type: integer
+      name:
+        description: |-
+          Name of the service
+          @example "Web Development"
+        type: string
+      price:
+        description: |-
+          Price of the service
+          @example 199.99
+        type: number
+      updated_at:
+        description: |-
+          Timestamp when the service was last updated
+          @example "2025-04-10T14:22:00Z"
+        type: string
+    type: object
+  models.User:
+    description: User represents a user with details such as name, email, password,
+      etc.
+    properties:
+      address:
+        description: |-
+          Address of the user, optional
+          @example "123 Main St, Springfield, IL"
+        type: string
+      age:
+        description: |-
+          Age of the user, optional
+          @example 25
+        type: integer
+      created_at:
+        description: |-
+          Timestamp when the user was created
+          @example "2025-04-10T14:22:00Z"
+        type: string
+      email:
+        description: |-
+          Email of the user, unique
+          @example "johndoe@example.com"
+        type: string
+      gender:
+        description: |-
+          Gender of the user, optional
+          @example "male"
+        type: string
+      id:
+        description: |-
+          ID of the user, automatically generated
+          @example 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_verified:
+        description: |-
+          Whether the user's email has been verified
+          @example false
+        type: boolean
+      name:
+        description: |-
+          Name of the user
+          @example "John Doe"
+        type: string
+      password:
+        description: |-
+          Password of the user
+          @example "password123"
+        type: string
+      phone:
+        description: |-
+          Phone number of the user, optional
+          @example "+1234567890"
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/enum.Role'
+        description: |-
+          Role of the user, default is 'user'
+          @example "admin"
+      updated_at:
+        description: |-
+          Timestamp when the user was last updated
+          @example "2025-04-10T14:22:00Z"
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: QFirst is a robust and easy-to-use booking system designed to help
+    businesses manage appointments and reservations efficiently.
+  title: QFirst API Documentation
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user by verifying their email and password. On successful
+        authentication, a JWT token will be generated for the user.
+      parameters:
+      - description: User login credentials
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AuthLoginStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid input or missing data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid email or password
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Log in to the platform.
+      tags:
+      - Authentication
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to the platform. The request must include valid
+        user data, including name, email, and password. The user will be created and
+        saved in the database.
+      parameters:
+      - description: User data to sign up
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid input or missing data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Email already in use
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Signing up to the platform.
+      tags:
+      - Authentication
+  /bookings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of bookings, with optional filtering by user ID,
+        service ID, or status.
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      - description: Service ID
+        in: query
+        name: service_id
+        type: string
+      - description: Booking Status
+        enum:
+        - pending
+        - confirmed
+        - cancelled
+        in: query
+        name: status
+        type: string
+      - description: Page number for pagination
+        in: query
+        name: page
+        type: integer
+      - description: Page size for pagination
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of bookings
+          schema:
+            items:
+              $ref: '#/definitions/models.Booking'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a list of bookings.
+      tags:
+      - Booking
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking for a user. The booking will be stored in
+        the database, and the user will receive a confirmation.
+      parameters:
+      - description: Booking details
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.Booking'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Booking created successfully
+          schema:
+            $ref: '#/definitions/models.Booking'
+        "400":
+          description: Invalid input or missing data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Service or User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new booking.
+      tags:
+      - Booking
+  /bookings/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a booking from the platform using its unique ID.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Booking deleted successfully
+        "400":
+          description: Invalid Booking ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Booking not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a booking by ID.
+      tags:
+      - Booking
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a booking by its unique ID.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking found
+          schema:
+            $ref: '#/definitions/models.Booking'
+        "400":
+          description: Invalid Booking ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Booking not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a booking by ID.
+      tags:
+      - Booking
+    put:
+      consumes:
+      - application/json
+      description: Update an existing booking by its ID. The booking details will
+        be updated, and the changes will be saved to the database.
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Booking details to update
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/models.Booking'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking updated successfully
+          schema:
+            $ref: '#/definitions/models.Booking'
+        "400":
+          description: Invalid input or missing data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Booking not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing booking.
+      tags:
+      - Booking
+  /services:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all available services in the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of services
+          schema:
+            items:
+              $ref: '#/definitions/models.Services'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all services.
+      tags:
+      - Service
+    post:
+      consumes:
+      - application/json
+      description: Add a new service to the platform.
+      parameters:
+      - description: Service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/models.Services'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Service created successfully
+          schema:
+            $ref: '#/definitions/models.Services'
+        "400":
+          description: Invalid input data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new service.
+      tags:
+      - Service
+  /services/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a service from the system by its unique ID.
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid Service ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Service not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete service by ID.
+      tags:
+      - Service
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a service's details by its unique ID.
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service details
+          schema:
+            $ref: '#/definitions/models.Services'
+        "400":
+          description: Invalid Service ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Service not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get service by ID.
+      tags:
+      - Service
+    put:
+      consumes:
+      - application/json
+      description: Update a service's details using its unique ID.
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/models.Services'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service updated successfully
+          schema:
+            $ref: '#/definitions/models.Services'
+        "400":
+          description: Invalid input data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Service not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing service.
+      tags:
+      - Service
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all users
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Add a new user to the platform
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new user
+      tags:
+      - User
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Permanently deletes a user by their unique ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user by ID
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a user's details by their unique ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update user information by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a user
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and your JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+  CsrfToken:
+    description: CSRF protection token.
+    in: header
+    name: X-CSRF-Token
+    type: apiKey
+swagger: "2.0"

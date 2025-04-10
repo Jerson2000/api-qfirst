@@ -3,12 +3,26 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/jerson2000/api-qfirst/config"
 	"github.com/jerson2000/api-qfirst/models"
 )
 
+// BookingCreate godoc
+// @Summary Create a new booking.
+// @Description Create a new booking for a user. The booking will be stored in the database, and the user will receive a confirmation.
+// @Tags Booking
+// @Accept  json
+// @Produce  json
+// @Param booking body models.Booking true "Booking details"
+// @Success 201 {object} models.Booking "Booking created successfully"
+// @Failure 400 {object} map[string]string "Invalid input or missing data"
+// @Failure 404 {object} map[string]string "Service or User not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /bookings [post]
 func BookingCreate(res http.ResponseWriter, req *http.Request) {
 	var booking models.Booking
 	err := json.NewDecoder(req.Body).Decode(&booking)
@@ -65,6 +79,20 @@ func BookingCreate(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusCreated, map[string]string{"message": "Booking has been created!"})
 }
 
+// BookingUpdate godoc
+// @Summary Update an existing booking.
+// @Description Update an existing booking by its ID. The booking details will be updated, and the changes will be saved to the database.
+// @Tags Booking
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Booking ID"
+// @Param booking body models.Booking true "Booking details to update"
+// @Success 200 {object} models.Booking "Booking updated successfully"
+// @Failure 400 {object} map[string]string "Invalid input or missing data"
+// @Failure 404 {object} map[string]string "Booking not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /bookings/{id} [put]
 func BookingUpdate(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	bookingId := vars["id"]
@@ -106,17 +134,87 @@ func BookingUpdate(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"message": "Booking has been updated!"})
 }
 
+// BookingList godoc
+// @Summary Get a list of bookings.
+// @Description Retrieve a list of bookings, with optional filtering by user ID, service ID, or status.
+// @Tags Booking
+// @Accept  json
+// @Produce  json
+// @Param user_id query string false "User ID"
+// @Param service_id query string false "Service ID"
+// @Param status query string false "Booking Status" Enums(pending, confirmed, cancelled)
+// @Param page query int false "Page number for pagination"
+// @Param page_size query int false "Page size for pagination"
+// @Success 200 {array} models.Booking "List of bookings"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /bookings [get]
 func BookingList(res http.ResponseWriter, req *http.Request) {
-
 	var booking []models.Booking
-	if err := config.Database.Find(&booking).Error; err != nil {
+
+	// Get query parameters
+	userID := req.URL.Query().Get("user_id")
+	serviceID := req.URL.Query().Get("service_id")
+	status := req.URL.Query().Get("status")
+	page := req.URL.Query().Get("page")
+	pageSize := req.URL.Query().Get("page_size")
+
+	// Build query conditions dynamically based on query parameters
+	query := config.Database.Model(&models.Booking{})
+
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	if serviceID != "" {
+		query = query.Where("service_id = ?", serviceID)
+	}
+
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	// Handle pagination if provided
+	if page != "" && pageSize != "" {
+		pageNum, err := strconv.Atoi(page)
+		if err != nil {
+			models.ResponseWithError(res, http.StatusBadRequest, "Invalid page number")
+			return
+		}
+		pageSizeNum, err := strconv.Atoi(pageSize)
+		if err != nil {
+			models.ResponseWithError(res, http.StatusBadRequest, "Invalid page size")
+			return
+		}
+
+		// Implement pagination (Skip and limit)
+		offset := (pageNum - 1) * pageSizeNum
+		query = query.Offset(offset).Limit(pageSizeNum)
+	}
+
+	// Fetch the bookings with the built query
+	if err := query.Find(&booking).Error; err != nil {
 		models.ResponseWithError(res, http.StatusInternalServerError, err.Error())
 		return
 	}
 
+	// Return the response with bookings
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"data": booking})
 }
 
+// BookingGetById godoc
+// @Summary Get a booking by ID.
+// @Description Retrieve a booking by its unique ID.
+// @Tags Booking
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Booking ID"
+// @Success 200 {object} models.Booking "Booking found"
+// @Failure 400 {object} map[string]string "Invalid Booking ID"
+// @Failure 404 {object} map[string]string "Booking not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /bookings/{id} [get]
 func BookingGetById(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	bookingId := vars["id"]
@@ -130,6 +228,19 @@ func BookingGetById(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusOK, map[string]any{"data": booking})
 }
 
+// BookingDelete godoc
+// @Summary Delete a booking by ID.
+// @Description Delete a booking from the platform using its unique ID.
+// @Tags Booking
+// @Accept  json
+// @Produce  json
+// @Param id path uint true "Booking ID"
+// @Success 204 "Booking deleted successfully"
+// @Failure 400 {object} map[string]string "Invalid Booking ID"
+// @Failure 404 {object} map[string]string "Booking not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
+// @Router /bookings/{id} [delete]
 func BookingDelete(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	bookingId := vars["id"]

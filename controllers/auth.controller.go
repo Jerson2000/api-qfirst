@@ -19,6 +19,18 @@ type AuthLoginStruct struct {
 	Password string `json:"password"`
 }
 
+// Signup Authentication godoc
+// @Summary Signing up to the platform.
+// @Description Add a new user to the platform. The request must include valid user data, including name, email, and password. The user will be created and saved in the database.
+// @Tags Authentication
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User data to sign up"
+// @Success 201 {object} models.User "User created successfully"
+// @Failure 400 {object} map[string]string "Invalid input or missing data"
+// @Failure 409 {object} map[string]string "Email already in use"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/signup [post]
 func AuthSignup(res http.ResponseWriter, req *http.Request) {
 	var signup models.User
 
@@ -54,6 +66,18 @@ func AuthSignup(res http.ResponseWriter, req *http.Request) {
 	models.ResponseWithJSON(res, http.StatusCreated, response)
 }
 
+// AuthLogin godoc
+// @Summary Log in to the platform.
+// @Description Authenticate a user by verifying their email and password. On successful authentication, a JWT token will be generated for the user.
+// @Tags Authentication
+// @Accept  json
+// @Produce  json
+// @Param login body AuthLoginStruct true "User login credentials"
+// @Success 200 {object} map[string]string "Login successful"
+// @Failure 400 {object} map[string]string "Invalid input or missing data"
+// @Failure 401 {object} map[string]string "Invalid email or password"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /auth/login [post]
 func AuthLogin(res http.ResponseWriter, req *http.Request) {
 	var login AuthLoginStruct
 	err := json.NewDecoder(req.Body).Decode(&login)
