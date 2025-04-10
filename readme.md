@@ -11,6 +11,7 @@ With a focus on performance and security, QFirst leverages modern middleware suc
 - [x] ~~**Role-based Permission**~~: Implemented role-based permission system for controlling user access.
 - [x] ~~**CSRF Middleware**~~: Implemented partially CSRF protection for secure requests.
 - [x] ~~**Cache Middleware**~~: Implement caching for faster data retrieval.
+- [x] ~~**Swagger UI**~~: Implement Swagger, allowing users to visualize and test API endpoints directly within the interface.
 - [ ] **OTP Verification**: Implement OTP-based verification for user.
 - [ ] **WebSocket**: Implement WebSocket for real-time chat and other real-time features.
 

@@ -25,5 +25,5 @@ type Devices struct {
 	User           User           `gorm:"foreignKey:UserId" json:"user"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
-	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"deleted_at" swaggerignore:"true"`
 }
