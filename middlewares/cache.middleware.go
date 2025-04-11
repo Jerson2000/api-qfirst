@@ -41,6 +41,8 @@ func CacheMiddleware(next http.Handler) http.Handler {
 			"/swagger/swagger-ui-standalone-preset.js",
 			"/swagger/swagger-ui-bundle.js",
 			"/swagger/favicon-32x32.png",
+			"/ws",
+			"/",
 		}
 
 		// Check if the requested path is in the excluded list

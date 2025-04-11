@@ -9,6 +9,7 @@ import (
 	_ "github.com/jerson2000/api-qfirst/docs"
 	"github.com/jerson2000/api-qfirst/middlewares"
 	"github.com/jerson2000/api-qfirst/routes"
+	"github.com/jerson2000/api-qfirst/websocket"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -69,6 +70,15 @@ func main() {
 	router.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./docs/swagger.json")
 	})
+
+	// websocket
+	router.HandleFunc("/ws", websocket.HandleWS)
+
+	// serving static files
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./static")
+	})
+
 	log.Println("Listening on port 3000")
 
 	log.Fatal(http.ListenAndServe(":3000", middlewares.CacheMiddleware(&router)))

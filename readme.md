@@ -1,8 +1,8 @@
-## QFirst: A Booking System
+## QFirst: Say Goodbye to Waiting, Hello to Booking
+
+> just vibe c0ding heh! 😆
 
 QFirst is a robust and easy-to-use booking system designed to help businesses manage appointments and reservations efficiently. Built with simplicity and scalability in mind, QFirst allows users to schedule, view, and manage bookings with minimal effort. The system is ideal for small and medium-sized enterprises looking for an intuitive tool to streamline their booking processes.
-
-With a focus on performance and security, QFirst leverages modern middleware such as JWT authentication and caching to ensure smooth and secure operations for both users and administrators.
 
 ### To-Do List
 
@@ -12,13 +12,15 @@ With a focus on performance and security, QFirst leverages modern middleware suc
 - [x] ~~**CSRF Middleware**~~: Implemented partially CSRF protection for secure requests.
 - [x] ~~**Cache Middleware**~~: Implement caching for faster data retrieval.
 - [x] ~~**Swagger UI**~~: Implement Swagger, allowing users to visualize and test API endpoints directly within the interface.
+- [x] ~~**WebSocket**~~: Implement WebSocket for real-time chat and other real-time features. (pub/sub)
 - [ ] **OTP Verification**: Implement OTP-based verification for user.
-- [ ] **WebSocket**: Implement WebSocket for real-time chat and other real-time features.
 
 ### Tech Stack
 
 - **Go stdlib (net/http)**
 - **Gorm**
+- **🦍/mux for routing**
+- **🦍/websocket**
 - **etc..**
 
 ---
