@@ -21,6 +21,7 @@ func init() {
 	config.ConfigCasbinEnforcer()
 	config.ConfigCSRF()
 	config.ConfigCacheInit()
+	config.ConfigMailerInit()
 }
 
 // @title QFirst API Documentation
@@ -78,6 +79,18 @@ func main() {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./static")
 	})
+
+	// test mail
+	// router.HandleFunc("/mail", func(w http.ResponseWriter, r *http.Request) {
+	// 	toMail := "jersonray.desierto@hcdc.edu.ph"
+	// 	err := mailer.SendOTPMail(toMail, "32132")
+	// 	if err != nil {
+	// 		errMessage := fmt.Sprintf("failed to send email to %s", toMail)
+	// 		models.ResponseWithError(w, http.StatusInternalServerError, errMessage)
+	// 	}
+	// 	models.ResponseWithJSON(w, http.StatusOK, map[string]string{"message": "Mail successfully send!"})
+
+	// }).Methods(http.MethodGet)
 
 	log.Println("Listening on port 3000")
 
