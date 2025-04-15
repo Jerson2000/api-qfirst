@@ -13,6 +13,7 @@
 - [x] **WebSocket**: Implemented WebSocket for real-time chat and other real-time features (pub/sub).
 - [x] **Mailer**: Implemented a mailer using [Go-Mail](https://github.com/wneessen/go-mail).
 - [x] **OTP Verification**: Implement OTP-based verification for users.
+- [x] **File Upload**: Implement file upload.
 
 ### Tech Stack
 
