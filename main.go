@@ -9,6 +9,7 @@ import (
 	_ "github.com/jerson2000/api-qfirst/docs"
 	"github.com/jerson2000/api-qfirst/middlewares"
 	"github.com/jerson2000/api-qfirst/routes"
+	"github.com/jerson2000/api-qfirst/storage"
 	"github.com/jerson2000/api-qfirst/websocket"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -81,6 +82,12 @@ func main() {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./static")
 	})
+
+	// storage
+	router.HandleFunc("/upload", storage.UploadFiles).Methods("POST")
+	router.HandleFunc("/files", storage.ListFiles).Methods("GET")
+	// serve uploaded files
+	router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir(storage.UploadDir))))
 
 	log.Println("Listening on port 3000")
 
